@@ -1,4 +1,4 @@
-from src.app import app
+from zapier_connection.src.app import app
 
 if __name__ == '__main__':
     app.run(
