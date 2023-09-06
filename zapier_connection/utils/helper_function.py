@@ -42,6 +42,10 @@ def check_conditions(csv_data: pd.DataFrame, body: dict) -> pd.DataFrame:
             if (this_odh + pd.DateOffset(months=12)) <= (csv_data.at[i, 'Current Date'] - pd.DateOffset(months=3)):
                 flag = True
 
+        if entry_option == 'Monthly':
+            if (this_odh + pd.DateOffset(months=12)) <= (csv_data.at[i, 'Current Date'] - pd.DateOffset(months=1)):
+                flag = True
+
         if flag and this_age > age_req and this_los >= service_duration and this_hos >= service_hours:
             csv_data.at[i, 'approved'] = 'Yes'
 
