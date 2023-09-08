@@ -11,8 +11,3 @@ CSV_FILE_PATH = os.path.join(
     tempfile.gettempdir(),
     f'{uuid.uuid1()}.csv'
 )
-
-JSON_FILE_PATH = os.path.join(
-    tempfile.gettempdir(),
-    f'{uuid.uuid1()}.json'
-)

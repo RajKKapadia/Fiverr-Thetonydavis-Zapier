@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 
 from config import config
@@ -6,6 +8,7 @@ def text_to_csv(text: str) -> pd.DataFrame:
     with open(config.TEXT_FILE_PATH, 'w') as file:
         file.write(text)
     csv_data = pd.read_csv(config.TEXT_FILE_PATH)
+    os.unlink(config.TEXT_FILE_PATH)
     return csv_data
 
 def process_csv_data(csv_data: pd.DataFrame, body: dict) -> pd.DataFrame:
@@ -18,7 +21,7 @@ def process_csv_data(csv_data: pd.DataFrame, body: dict) -> pd.DataFrame:
     csv_data['approved'] = 'No'
     return csv_data
 
-def check_conditions(csv_data: pd.DataFrame, body: dict) -> pd.DataFrame:
+def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
     age_req = int(body['age_req'])
     service_hours = int(body['service_req_hours'])
     service_duration = int(body['service_req_period'])
@@ -53,6 +56,16 @@ def check_conditions(csv_data: pd.DataFrame, body: dict) -> pd.DataFrame:
         if csv_data[col].dtype == 'datetime64[ns]':
             csv_data[col] = csv_data[col].dt.strftime('%Y/%m/%d')
 
-    json_data = csv_data.to_json(indent=2, orient='records', lines=True)
+    reponse_data = {
+        'response_data': []
+    }
 
-    return json_data
+    for i, row in csv_data.iterrows():
+        reponse_data['response_data'].append(row.to_dict())
+
+    return reponse_data
+
+def convert_data_to_csv(data: dict) -> str:
+    csv_data = pd.DataFrame.from_dict(data)
+    csv_data.to_csv(config.CSV_FILE_PATH, index=False)
+    return config.CSV_FILE_PATH
