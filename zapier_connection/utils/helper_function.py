@@ -1,8 +1,14 @@
 import os
+import re
 
 import pandas as pd
 
 from config import config
+
+def clean_string_get_number(text: str) -> int:
+    text = re.sub('\D', '', text)
+    text = int(text)
+    return text
 
 def text_to_csv(text: str) -> pd.DataFrame:
     with open(config.TEXT_FILE_PATH, 'w') as file:
@@ -22,9 +28,9 @@ def process_csv_data(csv_data: pd.DataFrame, body: dict) -> pd.DataFrame:
     return csv_data
 
 def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
-    age_req = int(body['age_req'])
-    service_hours = int(body['service_req_hours'])
-    service_duration = int(body['service_req_period'])
+    age_req = clean_string_get_number(body['age_req'])
+    service_hours = clean_string_get_number(body['service_req_hours'])
+    service_duration = clean_string_get_number(body['service_req_period'])
     entry_option = body['entry_date']
     for i, row in csv_data.iterrows():
         this_age = int(row['current_age'])
