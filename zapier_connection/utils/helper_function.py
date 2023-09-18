@@ -18,13 +18,14 @@ def text_to_csv(text: str) -> pd.DataFrame:
     return csv_data
 
 def process_csv_data(csv_data: pd.DataFrame, body: dict) -> pd.DataFrame:
-    csv_data['Date of Birth  (mm/dd/yyyy)'] = csv_data['Date of Birth  (mm/dd/yyyy)'].apply(pd.to_datetime)
-    csv_data['Original Date of Hire  (mm/dd/yyyy)'] = csv_data['Original Date of Hire  (mm/dd/yyyy)'].apply(pd.to_datetime)
+    csv_data['Date_of_Birth'] = csv_data['Date_of_Birth'].apply(pd.to_datetime)
+    csv_data['Date_of_Hire'] = csv_data['Date_of_Hire'].apply(pd.to_datetime)
     csv_data['Current Date'] = body['end_of_plan_year']
     csv_data['Current Date'] = csv_data['Current Date'].apply(pd.to_datetime)
-    csv_data['current_age'] = (csv_data['Current Date'].dt.year - csv_data['Date of Birth  (mm/dd/yyyy)'].dt.year).astype(int)
-    csv_data['length_of_service'] = (csv_data['Current Date'].dt.year - csv_data['Original Date of Hire  (mm/dd/yyyy)'].dt.year).astype(int) * 12
-    csv_data['approved'] = 'No'
+    csv_data['Current_Age'] = (csv_data['Current Date'].dt.year - csv_data['Date_of_Birth'].dt.year).astype(int)
+    csv_data['Length_of_Service'] = (csv_data['Current Date'].dt.year - csv_data['Date_of_Hire'].dt.year).astype(int) * 12
+    csv_data['Eligible_Status'] = 'Not_Eligible'
+    csv_data['HCE_NHCE'] = 'NHCE'
     return csv_data
 
 def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
@@ -33,30 +34,37 @@ def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
     service_duration = clean_string_get_number(body['service_req_period'])
     entry_option = body['entry_date']
     for i, row in csv_data.iterrows():
-        this_age = int(row['current_age'])
-        this_los = int(row['length_of_service'])
-        this_hos = int(row['Hours of Service'])
-        this_odh = row['Original Date of Hire  (mm/dd/yyyy)']
+        this_age = int(row['Current_Age'])
+        this_los = int(row['Length_of_Service'])
+        this_hos = int(row['Hours_of_Service'])
+        this_doh = row['Date_of_Hire']
+
+        this_pytc = clean_string_get_number(row['Plan_Year_Total_Compensation'])
+        this_op = clean_string_get_number(row['Ownership_Percent'])
+        this_fr = row['Family_Relationship']
 
         flag = False
 
-        if entry_option == 'Immediate' and row['Current Date'] > this_odh:
+        if entry_option == 'Immediate' and row['Current Date'] > this_doh:
             flag = True
 
-        if entry_option == 'Semi Annual':
-            if (this_odh + pd.DateOffset(months=12)) <= (csv_data.at[i, 'Current Date'] - pd.DateOffset(months=6)):
+        if entry_option == 'Semi-Annual':
+            if (this_doh + pd.DateOffset(months=12)) <= (csv_data.at[i, 'Current Date'] - pd.DateOffset(months=6)):
                 flag = True
 
         if entry_option == 'Quarterly':
-            if (this_odh + pd.DateOffset(months=12)) <= (csv_data.at[i, 'Current Date'] - pd.DateOffset(months=3)):
+            if (this_doh + pd.DateOffset(months=12)) <= (csv_data.at[i, 'Current Date'] - pd.DateOffset(months=3)):
                 flag = True
 
         if entry_option == 'Monthly':
-            if (this_odh + pd.DateOffset(months=12)) <= (csv_data.at[i, 'Current Date'] - pd.DateOffset(months=1)):
+            if (this_doh + pd.DateOffset(months=12)) <= (csv_data.at[i, 'Current Date'] - pd.DateOffset(months=1)):
                 flag = True
 
         if flag and this_age > age_req and this_los >= service_duration and this_hos >= service_hours:
-            csv_data.at[i, 'approved'] = 'Yes'
+            csv_data.at[i, 'Eligible_Status'] = 'Eligible'
+
+        if this_pytc >= 130000 or this_op >= 5 or this_fr == 'Yes':
+            csv_data.at[i, 'HCE_NHCE'] = 'HCE'
 
     for col in csv_data.columns:
         if csv_data[col].dtype == 'datetime64[ns]':
