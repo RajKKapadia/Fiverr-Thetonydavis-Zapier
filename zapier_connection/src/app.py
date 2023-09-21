@@ -23,9 +23,34 @@ def handle_process_data():
     return jsonify(json.dumps(response_data))
 
 
-@app.route('/dataToCSV', methods=['POST'])
-def handle_data_to_csv():
+@app.route('/eligibility_status_report', methods=['POST'])
+def handle_eligibility_status_report():
     body = request.get_json()
-    response_data = json.loads(body['response_data'])
-    csv_file_path = convert_data_to_csv(response_data['response_data'])
+    print(body)
+    response_data = json.loads(body['eligibility_status_report'])
+    csv_file_path = convert_data_to_csv(response_data['eligibility_status_report'])
+    return send_file(csv_file_path, mimetype='text/csv')
+
+@app.route('/hce_nhce_status_report', methods=['POST'])
+def handle_hce_nhce_status_report():
+    body = request.get_json()
+    print(body)
+    response_data = json.loads(body['hce_nhce_status_report'])
+    csv_file_path = convert_data_to_csv(response_data['hce_nhce_status_report'])
+    return send_file(csv_file_path, mimetype='text/csv')
+
+@app.route('/eligible_hce_report', methods=['POST'])
+def handle_eligible_hce_report():
+    body = request.get_json()
+    print(body)
+    response_data = json.loads(body['eligible_hce_report'])
+    csv_file_path = convert_data_to_csv(response_data['eligible_hce_report'])
+    return send_file(csv_file_path, mimetype='text/csv')
+
+@app.route('/eligible_nhce_report', methods=['POST'])
+def handle_eligible_nhce_report():
+    body = request.get_json()
+    print(body)
+    response_data = json.loads(body['eligible_nhce_report'])
+    csv_file_path = convert_data_to_csv(response_data['eligible_nhce_report'])
     return send_file(csv_file_path, mimetype='text/csv')
