@@ -123,7 +123,7 @@ def generate_eligibility_status_report(csv_data: pd.DataFrame) -> list[dict]:
 
 def generate_hce_nhce_status_report(csv_data: pd.DataFrame) -> list[dict]:
     hce_nhce_status_report = []
-    needed_columns = ['First_Name', 'Last_Name', 'Current_Age', 'Plan_Year_Total_Compensation', 'Plan_Year_Deferral_Percent'
+    needed_columns = ['First_Name', 'Last_Name', 'Current_Age', 'Plan_Year_Total_Compensation', 'Plan_Year_Deferral_Percent',
                       'Officer', 'Ownership_Percent', 'Family_Relationship', 'HCE_NHCE']
     new_csv_data = csv_data[needed_columns]
     new_csv_data.sort_values(
@@ -135,7 +135,7 @@ def generate_hce_nhce_status_report(csv_data: pd.DataFrame) -> list[dict]:
 
 def generate_eligible_hce_report(csv_data: pd.DataFrame) -> list[dict]:
     eligible_hce_report = []
-    needed_columns = ['First_Name', 'Last_Name', 'Current_Age', 'Plan_Year_Total_Compensation', 'Plan_Year_Deferral_Percent'
+    needed_columns = ['First_Name', 'Last_Name', 'Current_Age', 'Plan_Year_Total_Compensation', 'Plan_Year_Deferral_Percent',
                       'Officer', 'Ownership_Percent', 'Family_Relationship', 'HCE_NHCE']
     for _, row in csv_data.iterrows():
         if row['HCE_NHCE'] == 'HCE' and row['Eligible_Status'] == 'Eligible':
@@ -146,7 +146,7 @@ def generate_eligible_hce_report(csv_data: pd.DataFrame) -> list[dict]:
 
 def generate_eligible_nhce_report(csv_data: pd.DataFrame) -> list[dict]:
     eligible_nhce_report = []
-    needed_columns = ['First_Name', 'Last_Name', 'Current_Age', 'Plan_Year_Total_Compensation', 'Plan_Year_Deferral_Percent'
+    needed_columns = ['First_Name', 'Last_Name', 'Current_Age', 'Plan_Year_Total_Compensation', 'Plan_Year_Deferral_Percent',
                       'Officer', 'Ownership_Percent', 'Family_Relationship', 'HCE_NHCE']
     for _, row in csv_data.iterrows():
         if row['HCE_NHCE'] == 'NHCE' and row['Eligible_Status'] == 'Eligible':
