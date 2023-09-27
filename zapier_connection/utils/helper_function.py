@@ -103,7 +103,8 @@ def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
         'eligibility_status_report': generate_eligibility_status_report(csv_data),
         'hce_nhce_status_report': generate_hce_nhce_status_report(csv_data),
         'eligible_hce_report': generate_eligible_hce_report(csv_data),
-        'eligible_nhce_report': generate_eligible_nhce_report(csv_data)
+        'eligible_nhce_report': generate_eligible_nhce_report(csv_data),
+        'final_report': generate_final_report(csv_data)
     }
 
     return reponse_data
@@ -153,6 +154,16 @@ def generate_eligible_nhce_report(csv_data: pd.DataFrame) -> list[dict]:
             new_row = row[needed_columns]
             eligible_nhce_report.append(new_row.to_dict())
     return eligible_nhce_report
+
+
+def generate_final_report(csv_data: pd.DataFrame) -> list[dict]:
+    final_report = []
+    needed_columns = ['First_Name', 'Last_Name', 'Date_of_Birth', 'Date_of_Hire', 'Current_Age', 'Eligible_Status', 'Prior_Year_Compensation',
+                      'Plan_Year_Total_Compensation', 'Officer', 'Ownership_Percent', 'Family_Relationship', 'HCE_NHCE', 'Plan_Year_Deferral_Percent']
+    new_csv_data = csv_data[needed_columns]
+    for _, row in new_csv_data.iterrows():
+        final_report.append(row.to_dict())
+    return final_report
 
 
 def convert_data_to_csv(data: dict) -> str:

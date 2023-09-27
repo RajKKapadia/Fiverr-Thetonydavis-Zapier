@@ -54,3 +54,12 @@ def handle_eligible_nhce_report():
     response_data = json.loads(body['eligible_nhce_report'])
     csv_file_path = convert_data_to_csv(response_data['eligible_nhce_report'])
     return send_file(csv_file_path, mimetype='text/csv')
+
+
+@app.route('/final_report', methods=['POST'])
+def handle_final_report():
+    body = request.get_json()
+    print(body)
+    response_data = json.loads(body['final_report'])
+    csv_file_path = convert_data_to_csv(response_data['final_report'])
+    return send_file(csv_file_path, mimetype='text/csv')
