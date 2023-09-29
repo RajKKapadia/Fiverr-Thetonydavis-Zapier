@@ -2,7 +2,7 @@ import json
 
 from flask import Flask, request, jsonify, send_file
 
-from zapier_connection.utils.helper_function import text_to_csv, process_csv_data, check_conditions, convert_data_to_csv
+from zapier_connection.utils.helper_function import text_to_csv, process_csv_data, check_conditions, convert_data_to_csv, handle_ccd
 
 app = Flask(__name__)
 
@@ -62,4 +62,11 @@ def handle_final_report():
     print(body)
     response_data = json.loads(body['final_report'])
     csv_file_path = convert_data_to_csv(response_data['final_report'])
+    return send_file(csv_file_path, mimetype='text/csv')
+
+@app.route('/calculate_correlative_destribution', methods=['POST'])
+def handle_calculate_correlative_destribution():
+    body = request.get_json()
+    correlative_destribution = handle_ccd(body)
+    csv_file_path = convert_data_to_csv(correlative_destribution)
     return send_file(csv_file_path, mimetype='text/csv')

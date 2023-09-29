@@ -170,3 +170,22 @@ def convert_data_to_csv(data: dict) -> str:
     csv_data = pd.DataFrame.from_dict(data)
     csv_data.to_csv(config.CSV_FILE_PATH, index=False)
     return config.CSV_FILE_PATH
+
+
+def handle_ccd(body: dict) -> dict:
+    allowd_hce_limit = float(re.sub('%', '', body['Allowed_HCE_Limit']))
+    average_hce = float(re.sub('%', '', body['Avg_HCE']))
+    # average_nhce = body['Avg_NHCE']
+    # hce_status = csv_data = text_to_csv(body['HCE_Status'])
+    employee_data_csv = text_to_csv(body['employee_data_csv'])
+    excess_deferral_percentage = average_hce - allowd_hce_limit
+    employee_data_csv['Excess_Percentage'] = round(excess_deferral_percentage, 2)
+    employee_data_csv['Excess_Contribution'] = 0.0
+    needed_columns = ['First_Name', 'Last_Name', 'HCE_NHCE', 'Plan_Year_Total_Compensation', 'Excess_Percentage', 'Excess_Contribution']
+    correlative_destribution = []
+    for i, row in employee_data_csv.iterrows():
+        if row['HCE_NHCE'] == 'HCE':
+            row['Excess_Contribution'] = '{:,}'.format(int(float(clean_string_get_number(row['Plan_Year_Total_Compensation'])) * row['Excess_Percentage']))
+        new_row = row[needed_columns]
+        correlative_destribution.append(new_row.to_dict())
+    return correlative_destribution
