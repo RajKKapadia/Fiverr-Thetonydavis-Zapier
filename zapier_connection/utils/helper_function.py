@@ -207,3 +207,29 @@ def handle_ccd(body: dict) -> dict:
         new_row = row[needed_columns]
         correlative_destribution.append(new_row.to_dict())
     return correlative_destribution
+
+
+def handle_qnce(body: dict) -> dict:
+    allowd_hce_limit = remove_percentage_get_float(body['Allowed_HCE_Limit'])
+    average_hce = remove_percentage_get_float(body['Avg_HCE'])
+    employee_data_csv = text_to_csv(body['employee_data_csv'])
+    '''TODO
+    [ ] Clean the columns
+    '''
+    employee_data_csv['Plan_Year_Total_Compensation'] = employee_data_csv['Plan_Year_Total_Compensation'].apply(
+        remove_commas_get_int)
+    
+    employee_data_csv['Individual_QNHCE'] = 0
+    excess_deferral_percentage = average_hce - allowd_hce_limit
+    total_compensation = employee_data_csv['Plan_Year_Total_Compensation'].sum()
+    total_qnce = (excess_deferral_percentage * total_compensation) / 100
+    needed_columns = ['First_Name', 'Last_Name', 'HCE_NHCE',
+                      'Plan_Year_Total_Compensation', 'Individual_QNHCE']
+    individual_qnhce = []
+    for i, row in employee_data_csv.iterrows():
+        row['Individual_QNHCE'] = int((row['Plan_Year_Total_Compensation'] / total_compensation) * total_qnce)
+        row['Individual_QNHCE'] = '{:,}'.format(row['Individual_QNHCE'])
+        row['Plan_Year_Total_Compensation'] = '{:,}'.format(row['Plan_Year_Total_Compensation'])
+        new_row = row[needed_columns]
+        individual_qnhce.append(new_row.to_dict())
+    return individual_qnhce
