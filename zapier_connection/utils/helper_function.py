@@ -6,10 +6,15 @@ import pandas as pd
 from config import config
 
 
-def clean_string_get_number(text: str) -> int:
-    text = text.split('.')[0]
+def remove_commas_get_int(text: str) -> int:
     text = re.sub('\D', '', text)
     text = int(text)
+    return text
+
+
+def remove_percentage_get_float(text: str) -> float:
+    text = text.replace('%', '')
+    text = float(text)
     return text
 
 
@@ -37,9 +42,9 @@ def process_csv_data(csv_data: pd.DataFrame, body: dict) -> pd.DataFrame:
 
 
 def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
-    age_req = clean_string_get_number(body['age_req'])
-    service_hours = clean_string_get_number(body['service_req_hours'])
-    service_duration = clean_string_get_number(body['service_req_period'])
+    age_req = remove_commas_get_int(body['age_req'])
+    service_hours = remove_commas_get_int(body['service_req_hours'])
+    service_duration = remove_commas_get_int(body['service_req_period'])
     entry_option = body['entry_date']
     for i, row in csv_data.iterrows():
         this_age = int(row['Current_Age'])
@@ -47,13 +52,13 @@ def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
         this_hos = int(row['Hours_of_Service'])
         this_doh = row['Date_of_Hire']
 
-        this_pytc = clean_string_get_number(row['Prior_Year_Compensation'])
-        this_op = clean_string_get_number(row['Ownership_Percent'])
+        this_pytc = remove_commas_get_int(row['Prior_Year_Compensation'])
+        this_op = remove_commas_get_int(row['Ownership_Percent'])
         this_fr = row['Family_Relationship']
 
-        this_planytc = clean_string_get_number(
+        this_planytc = remove_commas_get_int(
             row['Plan_Year_Total_Compensation'])
-        this_pyed = clean_string_get_number(
+        this_pyed = remove_commas_get_int(
             row['Plan_Year_Employee_Deferrals'])
 
         '''This is for eligibity
@@ -173,19 +178,32 @@ def convert_data_to_csv(data: dict) -> str:
 
 
 def handle_ccd(body: dict) -> dict:
-    allowd_hce_limit = float(re.sub('%', '', body['Allowed_HCE_Limit']))
-    average_hce = float(re.sub('%', '', body['Avg_HCE']))
+    allowd_hce_limit = remove_percentage_get_float(body['Allowed_HCE_Limit'])
+    average_hce = remove_percentage_get_float(body['Avg_HCE'])
     # average_nhce = body['Avg_NHCE']
-    # hce_status = csv_data = text_to_csv(body['HCE_Status'])
+    # hce_status = text_to_csv(body['HCE_Status'])
+    max_allowed_compensation = int(body['Max_Allowed_Comp'])
     employee_data_csv = text_to_csv(body['employee_data_csv'])
+    '''TODO
+    [ ] Clean the columns
+    '''
+    employee_data_csv['Plan_Year_Total_Compensation'] = employee_data_csv['Plan_Year_Total_Compensation'].apply(
+        remove_commas_get_int)
+
     excess_deferral_percentage = average_hce - allowd_hce_limit
-    employee_data_csv['Excess_Percentage'] = round(excess_deferral_percentage, 2)
+    employee_data_csv['Excess_Percentage'] = round(
+        excess_deferral_percentage, 2)
     employee_data_csv['Excess_Contribution'] = 0.0
-    needed_columns = ['First_Name', 'Last_Name', 'HCE_NHCE', 'Plan_Year_Total_Compensation', 'Excess_Percentage', 'Excess_Contribution']
+    needed_columns = ['First_Name', 'Last_Name', 'HCE_NHCE',
+                      'Plan_Year_Total_Compensation', 'Excess_Percentage', 'Excess_Contribution']
     correlative_destribution = []
     for i, row in employee_data_csv.iterrows():
         if row['HCE_NHCE'] == 'HCE':
-            row['Excess_Contribution'] = '{:,}'.format(int(float(clean_string_get_number(row['Plan_Year_Total_Compensation'])) * row['Excess_Percentage']))
+            if row['Plan_Year_Total_Compensation'] >= max_allowed_compensation:
+                row['Plan_Year_Total_Compensation'] = max_allowed_compensation
+            row['Excess_Contribution'] = int((row['Plan_Year_Total_Compensation'] * row['Excess_Percentage']) / 100)
+        row['Plan_Year_Total_Compensation'] = '{:,}'.format(row['Plan_Year_Total_Compensation'])
+        row['Excess_Contribution'] = '{:,}'.format(row['Excess_Contribution'])
         new_row = row[needed_columns]
         correlative_destribution.append(new_row.to_dict())
     return correlative_destribution
