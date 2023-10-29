@@ -2,3 +2,4 @@ venv/
 __pycache__/
 research_notebook.ipynb
 text.txt
+test_file.py
