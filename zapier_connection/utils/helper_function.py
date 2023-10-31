@@ -6,11 +6,13 @@ import pandas as pd
 from config import config
 
 
-def remove_commas_get_int(text: str) -> int:
+def remove_commas_get_int(text) -> int:  # Removed the str type hint
     print(f"Type: {type(text)}, Value: {text}")
-    text = re.sub('\D', '', text)
+    if isinstance(text, str):
+        text = re.sub('\D', '', text)
     text = int(text)
     return text
+
 
 
 def remove_percentage_get_float(text: str) -> float:
