@@ -7,6 +7,7 @@ from config import config
 
 
 def remove_commas_get_int(text: str) -> int:
+    print(f"Type: {type(text)}, Value: {text}").
     text = re.sub('\D', '', text)
     text = int(text)
     return text
