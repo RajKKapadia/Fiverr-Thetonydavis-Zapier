@@ -18,7 +18,7 @@ def annotated_progress_bar(percentage: float, label: str) -> str:
                 {
                     'label': 'Users',
                     'data': [100],
-                    'backgroundColor': QuickChartFunction("getGradientFillHelper('horizontal', ['green', 'yellow', 'orange', 'red'])"),
+                    'backgroundColor': QuickChartFunction("getGradientFillHelper('horizontal', ['red', 'orange', 'yellow', 'gren'])"),
                 },
             ],
         },
