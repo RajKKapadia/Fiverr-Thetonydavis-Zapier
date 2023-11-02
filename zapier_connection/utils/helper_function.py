@@ -55,6 +55,9 @@ def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
         this_los = int(row['Length_of_Service'])
         this_hos = int(row['Hours_of_Service'])
         this_doh = row['Date_of_Hire']
+        this_pytc = remove_commas_get_int(row['Prior_Year_Compensation'])  # Ensure this line is present
+        this_op = remove_commas_get_int(row['Ownership_Percent'])
+        this_fr = row['Family_Relationship']
 
         flag = False
 
@@ -72,6 +75,9 @@ def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
 
         if flag and this_age > age_req and this_los >= service_duration and this_hos >= service_hours:
             csv_data.at[i, 'Eligible_Status'] = 'Eligible'
+        
+        if this_pytc >= config.HCE_AMOUNT or this_op >= config.HCE_OWNERSHIP_PERCENTAGE or this_fr == config.HCE_FAMILY_RELATIONSHIP:
+            csv_data.at[i, 'HCE_NHCE'] = 'HCE'
 
         '''This is for HCE
         (1) Checking highly compensated employee
