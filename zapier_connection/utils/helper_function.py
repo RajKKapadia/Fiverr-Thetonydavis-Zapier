@@ -43,7 +43,6 @@ def process_csv_data(csv_data: pd.DataFrame, body: dict) -> pd.DataFrame:
     csv_data['Plan_Year_Deferral_Percent'] = '0.0%'
     return csv_data
 
-
 def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
     age_req = remove_commas_get_int(body['age_req'])
     service_hours = remove_commas_get_int(body['service_req_hours'])
@@ -55,9 +54,11 @@ def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
         this_los = int(row['Length_of_Service'])
         this_hos = int(row['Hours_of_Service'])
         this_doh = row['Date_of_Hire']
-        this_pytc = remove_commas_get_int(row['Prior_Year_Compensation'])  # Ensure this line is present
+        this_pytc = remove_commas_get_int(row['Prior_Year_Compensation'])
         this_op = remove_commas_get_int(row['Ownership_Percent'])
         this_fr = row['Family_Relationship']
+        this_planytc = remove_commas_get_int(row['Plan_Year_Total_Compensation'])
+        this_pyed = remove_commas_get_int(row['Plan_Year_Employee_Deferrals'])
 
         flag = False
 
@@ -79,12 +80,6 @@ def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
         if this_pytc >= config.HCE_AMOUNT or this_op >= config.HCE_OWNERSHIP_PERCENTAGE or this_fr == config.HCE_FAMILY_RELATIONSHIP:
             csv_data.at[i, 'HCE_NHCE'] = 'HCE'
 
-        '''This is for HCE
-        (1) Checking highly compensated employee
-        '''
-        if this_pytc >= config.HCE_AMOUNT or this_op >= config.HCE_OWNERSHIP_PERCENTAGE or this_fr == config.HCE_FAMILY_RELATIONSHIP:
-            csv_data.at[i, 'HCE_NHCE'] = 'HCE'
-
         '''This is for deferral percentage
         (1) Checking the plan year total compensation is less than config.DP_MAXIMUM_COMPENSATION
         (2) Calculating Deferral_Percentage
@@ -98,7 +93,7 @@ def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
         if csv_data[col].dtype == 'datetime64[ns]':
             csv_data[col] = csv_data[col].dt.strftime('%Y/%m/%d')
 
-    reponse_data = {
+    response_data = {
         'eligibility_status_report': generate_eligibility_status_report(csv_data),
         'hce_nhce_status_report': generate_hce_nhce_status_report(csv_data),
         'eligible_hce_report': generate_eligible_hce_report(csv_data),
@@ -106,7 +101,7 @@ def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
         'final_report': generate_final_report(csv_data)
     }
 
-    return reponse_data
+    return response_data
 
 
 def generate_eligibility_status_report(csv_data: pd.DataFrame) -> list[dict]:
