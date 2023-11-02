@@ -49,39 +49,24 @@ def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
     service_hours = remove_commas_get_int(body['service_req_hours'])
     service_duration = remove_commas_get_int(body['service_req_period'])
     entry_option = body['entry_date']
+    
     for i, row in csv_data.iterrows():
         this_age = int(row['Current_Age'])
         this_los = int(row['Length_of_Service'])
         this_hos = int(row['Hours_of_Service'])
         this_doh = row['Date_of_Hire']
 
-        this_pytc = remove_commas_get_int(row['Prior_Year_Compensation'])
-        this_op = remove_commas_get_int(row['Ownership_Percent'])
-        this_fr = row['Family_Relationship']
-
-        this_planytc = remove_commas_get_int(
-            row['Plan_Year_Total_Compensation'])
-        this_pyed = remove_commas_get_int(
-            row['Plan_Year_Employee_Deferrals'])
-
-        '''This is for eligibity
-        (1) Checking for the entry option
-        (2) Testing the eligibilty of the employee
-        '''
         flag = False
 
         if entry_option == 'Immediate' and row['Current Date'] > this_doh:
             flag = True
-
-        if entry_option == 'Semi-Annual':
-            if (this_doh + pd.DateOffset(months=12)) <= (csv_data.at[i, 'Current Date'] - pd.DateOffset(months=6)):
+        elif entry_option == 'Semi-Annual':
+            if this_doh <= (csv_data.at[i, 'Current Date'] - pd.DateOffset(months=3)):
                 flag = True
-
-        if entry_option == 'Quarterly':
+        elif entry_option == 'Quarterly':
             if (this_doh + pd.DateOffset(months=12)) <= (csv_data.at[i, 'Current Date'] - pd.DateOffset(months=3)):
                 flag = True
-
-        if entry_option == 'Monthly':
+        elif entry_option == 'Monthly':
             if (this_doh + pd.DateOffset(months=12)) <= (csv_data.at[i, 'Current Date'] - pd.DateOffset(months=1)):
                 flag = True
 
