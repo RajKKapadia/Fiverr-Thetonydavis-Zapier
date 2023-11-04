@@ -152,7 +152,6 @@ def generate_eligible_nhce_report(csv_data: pd.DataFrame) -> list[dict]:
     return eligible_nhce_report
 
 
-
 def generate_final_report(csv_data: pd.DataFrame) -> list[dict]:
     final_report = []
     needed_columns = ['First_Name', 'Last_Name', 'Date_of_Birth', 'Date_of_Hire', 'Current_Age', 'Eligible_Status', 'Prior_Year_Compensation',
