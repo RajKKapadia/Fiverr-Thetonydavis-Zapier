@@ -6,10 +6,12 @@ import pandas as pd
 from config import config
 
 
-def remove_commas_get_int(text) -> int:  # Removed the str type hint
+def remove_commas_get_int(text) -> int:
     print(f"Type: {type(text)}, Value: {text}")
     if isinstance(text, str):
-        text = re.sub('\D', '', text)
+        text = re.sub('[^\d]', '', text)  # Remove all non-digit characters
+        if text == "":
+            text = "0"  # Handle the case where there are no digits
     text = int(text)
     return text
 
