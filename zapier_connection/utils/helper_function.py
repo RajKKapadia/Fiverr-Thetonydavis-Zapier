@@ -1,5 +1,6 @@
 import os
 import re
+import math
 
 import pandas as pd
 
@@ -8,14 +9,14 @@ from config import config
 
 def remove_commas_get_int(text) -> int:
     print(f"Type: {type(text)}, Value: {text}")
+    if pd.isnull(text) or (isinstance(text, float) and math.isnan(text)):
+        return 0
     if isinstance(text, str):
         text = re.sub('[^\d]', '', text)  # Remove all non-digit characters
         if text == "":
             text = "0"  # Handle the case where there are no digits
     text = int(text)
     return text
-
-
 
 def remove_percentage_get_float(text: str) -> float:
     text = text.replace('%', '')
