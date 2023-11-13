@@ -1,3 +1,12 @@
+def format_compensation(value):
+    value = value.replace(',', '').replace('$', '')
+    try:
+        numeric_value = float(value)
+    except ValueError:
+        print(f"ValueError: Could not convert '{value}' to float.")
+        return value
+    return "${:,.0f}".format(numeric_value)
+
 import os
 import re
 import math
@@ -149,7 +158,7 @@ def generate_eligible_nhce_report(csv_data: pd.DataFrame) -> list[dict]:
     for _, row in csv_data.iterrows():
         if row['HCE_NHCE'] == 'NHCE' and row['Eligible_Status'] == 'Eligible':
             # Format the 'Plan_Year_Total_Compensation' field as currency with no decimals
-            row['Plan_Year_Total_Compensation'] = "${:,.0f}".format(row['Plan_Year_Total_Compensation'])
+            row['Plan_Year_Total_Compensation'] = format_compensation(row['Plan_Year_Total_Compensation'])
             new_row = row[needed_columns]
             eligible_nhce_report.append(new_row.to_dict())
     return eligible_nhce_report
