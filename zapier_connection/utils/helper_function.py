@@ -57,7 +57,7 @@ def check_conditions(csv_data: pd.DataFrame, body: dict) -> dict:
         this_los = int(row['Length_of_Service'])
         this_hos = int(row['Hours_of_Service'])
         this_doh = row['Date_of_Hire']
-        this_pytc = remove_commas_get_int(row['Prior_Year_Compensation'])
+        this_pytc = remove_commas_get_int(row['Plan_Year_Total_Compensation'])
         this_op = remove_commas_get_int(row['Ownership_Percent'])
         this_fr = row['Family_Relationship']
         this_planytc = remove_commas_get_int(row['Plan_Year_Total_Compensation'])
@@ -157,7 +157,7 @@ def generate_eligible_nhce_report(csv_data: pd.DataFrame) -> list[dict]:
 
 def generate_final_report(csv_data: pd.DataFrame) -> list[dict]:
     final_report = []
-    needed_columns = ['First_Name', 'Last_Name', 'Date_of_Birth', 'Date_of_Hire', 'Current_Age', 'Eligible_Status', 'Prior_Year_Compensation',
+    needed_columns = ['First_Name', 'Last_Name', 'Date_of_Birth', 'Date_of_Hire', 'Current_Age', 'Eligible_Status', 'Plan_Year_Total_Compensation',
                       'Plan_Year_Total_Compensation', 'Officer', 'Ownership_Percent', 'Family_Relationship', 'HCE_NHCE', 'Plan_Year_Deferral_Percent']
     new_csv_data = csv_data[needed_columns]
     for _, row in new_csv_data.iterrows():
