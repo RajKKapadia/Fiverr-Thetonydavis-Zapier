@@ -1,4 +1,12 @@
+
 def format_compensation(value):
+    try:
+        value = value.replace(',', '').replace('$', '')
+        numeric_value = float(value)
+        return "${:,.0f}".format(numeric_value)
+    except ValueError:
+        logging.error(f"ValueError: Could not convert '{value}' to float.")
+        return None
     value = value.replace(',', '').replace('$', '')
     try:
         numeric_value = float(value)
@@ -16,7 +24,14 @@ import pandas as pd
 from config import config
 
 
+
 def remove_commas_get_int(text) -> int:
+    if pd.isnull(text) or (isinstance(text, float) and math.isnan(text)):
+        return 0
+    if isinstance(text, str):
+        text = re.sub('[^\d]', '', text)  # Remove all non-digit characters
+        text = text if text else "0"  # Handle the case where there are no digits
+    return int(text)
     print(f"Type: {type(text)}, Value: {text}")
     if pd.isnull(text) or (isinstance(text, float) and math.isnan(text)):
         return 0
@@ -27,7 +42,14 @@ def remove_commas_get_int(text) -> int:
     text = int(text)
     return text
 
+
 def remove_percentage_get_float(text: str) -> float:
+    try:
+        text = text.replace('%', '')
+        return float(text)
+    except ValueError:
+        logging.error(f"ValueError: Could not convert '{text}' to float.")
+        return None
     text = text.replace('%', '')
     text = float(text)
     return text
