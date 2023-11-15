@@ -2,7 +2,7 @@ import json
 
 from flask import Flask, request, jsonify, send_file
 
-from enhanced_helper_function import *
+from zapier_connection.utils.helper_function import *
 
 app = Flask(__name__)
 
