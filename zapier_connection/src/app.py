@@ -11,8 +11,6 @@ app = Flask(__name__)
 def handle_home():
     return 'OK', 200
 
-
-
 @app.route('/processData', methods=['POST'])
 def handle_process_data():
     try:
