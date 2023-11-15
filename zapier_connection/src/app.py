@@ -2,7 +2,7 @@ import json
 
 from flask import Flask, request, jsonify, send_file
 
-from zapier_connection.utils.helper_function import *
+from enhanced_helper_function import *
 
 app = Flask(__name__)
 
@@ -12,7 +12,19 @@ def handle_home():
     return 'OK', 200
 
 
+
 @app.route('/processData', methods=['POST'])
+def handle_process_data():
+    try:
+        body = request.get_json()
+        # Implement the logic to process the CSV data using the updated helper functions
+        # This is where the processing of the data should be done
+        # ...
+        response_data = {}  # Placeholder for the actual response data
+        return jsonify(json.dumps(response_data))
+    except Exception as e:
+        logging.error(f"Error processing data: {e}")
+        return jsonify({'error': 'An error occurred while processing the data'}), 500
 def handle_process_data():
     body = request.get_json()
     print(body)
