@@ -2,7 +2,7 @@ import json
 
 from flask import Flask, request, jsonify, send_file
 
-from zapier_connection.utils.helper_function import *
+from enhanced_helper_function import *
 
 app = Flask(__name__)
 
@@ -39,32 +39,48 @@ def handle_process_data():
 def handle_eligibility_status_report():
     body = request.get_json()
     print(body)
-    response_data = json.loads(body['eligibility_status_report'])
-    csv_file_path = convert_data_to_csv(response_data['eligibility_status_report'])
+    if 'eligibility_status_report' in body:
+        response_data = json.loads(body['eligibility_status_report'])
+        csv_file_path = convert_data_to_csv(response_data)
+        return send_file(csv_file_path, mimetype='text/csv')
+    else:
+        return jsonify({'error': 'Key eligibility_status_report not found in request'}), 400
     return send_file(csv_file_path, mimetype='text/csv')
 
 @app.route('/hce_nhce_status_report', methods=['POST'])
 def handle_hce_nhce_status_report():
     body = request.get_json()
     print(body)
-    response_data = json.loads(body['hce_nhce_status_report'])
-    csv_file_path = convert_data_to_csv(response_data['hce_nhce_status_report'])
+    if 'hce_nhce_status_report' in body:
+        response_data = json.loads(body['hce_nhce_status_report'])
+        csv_file_path = convert_data_to_csv(response_data)
+        return send_file(csv_file_path, mimetype='text/csv')
+    else:
+        return jsonify({'error': 'Key hce_nhce_status_report not found in request'}), 400
     return send_file(csv_file_path, mimetype='text/csv')
 
 @app.route('/eligible_hce_report', methods=['POST'])
 def handle_eligible_hce_report():
     body = request.get_json()
     print(body)
-    response_data = json.loads(body['eligible_hce_report'])
-    csv_file_path = convert_data_to_csv(response_data['eligible_hce_report'])
+    if 'eligible_hce_report' in body:
+        response_data = json.loads(body['eligible_hce_report'])
+        csv_file_path = convert_data_to_csv(response_data)
+        return send_file(csv_file_path, mimetype='text/csv')
+    else:
+        return jsonify({'error': 'Key eligible_hce_report not found in request'}), 400
     return send_file(csv_file_path, mimetype='text/csv')
 
 @app.route('/eligible_nhce_report', methods=['POST'])
 def handle_eligible_nhce_report():
     body = request.get_json()
     print(body)
-    response_data = json.loads(body['eligible_nhce_report'])
-    csv_file_path = convert_data_to_csv(response_data['eligible_nhce_report'])
+    if 'eligible_nhce_report' in body:
+        response_data = json.loads(body['eligible_nhce_report'])
+        csv_file_path = convert_data_to_csv(response_data)
+        return send_file(csv_file_path, mimetype='text/csv')
+    else:
+        return jsonify({'error': 'Key eligible_nhce_report not found in request'}), 400
     return send_file(csv_file_path, mimetype='text/csv')
 
 
@@ -72,8 +88,12 @@ def handle_eligible_nhce_report():
 def handle_final_report():
     body = request.get_json()
     print(body)
-    response_data = json.loads(body['final_report'])
-    csv_file_path = convert_data_to_csv(response_data['final_report'])
+    if 'final_report' in body:
+        response_data = json.loads(body['final_report'])
+        csv_file_path = convert_data_to_csv(response_data)
+        return send_file(csv_file_path, mimetype='text/csv')
+    else:
+        return jsonify({'error': 'Key final_report not found in request'}), 400
     return send_file(csv_file_path, mimetype='text/csv')
 
 @app.route('/calculate_correlative_destribution', methods=['POST'])
